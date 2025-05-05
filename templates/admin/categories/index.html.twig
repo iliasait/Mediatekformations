@@ -1,0 +1,41 @@
+{% extends 'basefront.html.twig' %}
+
+{% block body %}
+<h1>Gestion des catégories</h1>
+
+{% for message in app.flashes('success') %}
+    <div class="alert alert-success">{{ message }}</div>
+{% endfor %}
+{% for message in app.flashes('error') %}
+    <div class="alert alert-danger">{{ message }}</div>
+{% endfor %}
+
+<h3 style="padding: 15px 0;">Ajouter une catégorie</h3>
+{{ form_start(form, {attr: {class: 'd-flex flex-row'}})}}
+    {{ form_row(form.name) }}
+    <button type="submit" class="btn btn-success btn-sm">Ajouter</button>
+{{ form_end(form) }}
+
+<h4 style="padding: 15px 0;">Liste des catégories</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for category in categories %}
+            <tr>
+                <td>{{ category.name }}</td>
+                <td>
+                    <form method="POST" action="{{ path('admin.categories.delete', {id: category.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Confirmer la suppression ?')">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

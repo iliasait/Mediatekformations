@@ -1,0 +1,65 @@
+{% extends "basefront.html.twig" %}
+
+{% block title %}Gestion des Playlists{% endblock %}
+
+{% block body %}
+<h1>Gestion des Playlists</h1>
+
+<a href="{{ path('admin.playlists.add') }}" class="btn btn-success">Ajouter une nouvelle playlist</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nom
+            <br />
+                <button onclick="window.location='{{ path('admin.playlists.sort', {champ:'name', ordre:'ASC'}) }}'" class="btn btn-info btn-sm" aria-label="Sort Ascending">↓</button>
+                <button onclick="window.location='{{ path('admin.playlists.sort', {champ:'name', ordre:'DESC'}) }}'" class="btn btn-info btn-sm" aria-label="Sort Descending">↑</button>   
+                    <form class="form-inline mt-1" method="POST" action="{{ path('admin.playlists.findallcontain', {champ:'name'}) }}">
+                        <div class="form-group mr-1 mb-2">
+                            <input type="text" class="sm" name="recherche" 
+                                   value="{% if valeur|default and not table|default %}{{ valeur }}{% endif %}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('filtre_name') }}">
+                            <button type="submit" class="btn btn-info mb-2 btn-sm">filtrer</button>
+                        </div>
+                    </form>    
+            </th>
+            <th>Description
+            <br />
+                <button onclick="window.location='{{ path('admin.playlists.sort', {champ:'description', ordre:'ASC'}) }}'" class="btn btn-info btn-sm" aria-label="Sort Ascending">↓</button>
+                <button onclick="window.location='{{ path('admin.playlists.sort', {champ:'description', ordre:'DESC'}) }}'" class="btn btn-info btn-sm" aria-label="Sort Descending">↑</button>   
+            </th>
+            <th>Nombre de formations
+            <br />
+                <button type="button" class="btn btn-info btn-sm active" aria-pressed="true" onclick="window.location.href='{{ path('admin.playlists', {sortBy: 'ASC'}) }}'" tabindex="0" onkeydown="if(event.key === 'Enter'){ window.location.href='{{ path('admin.playlists', {sortBy: 'ASC'}) }}'; }">
+                    ↓
+                </button>
+                <button type="button" class="btn btn-info btn-sm active" aria-pressed="true" onclick="window.location.href='{{ path('admin.playlists', {sortBy: 'DESC'}) }}'" tabindex="0" onkeydown="if(event.key === 'Enter'){ window.location.href='{{ path('admin.playlists', {sortBy: 'DESC'}) }}'; }">
+                    ↑
+                </button>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for playlist in playlists %}
+            <tr>
+                <td><h5 class="text-primary">{{ playlist.name }}</h5></td>
+                <td><span>{{ playlist.description }}</span></td>
+                <td><span>{{ playlist.formations|length }}</span></td>
+                <td>
+                    <a href="{{ path('admin.playlists.edit', {id: playlist.id}) }}" class="btn btn-primary">Modifier</a>
+                    
+                    {% if playlist.formations|length == 0 %}
+                        <form method="post" action="{{ path('admin.playlists.delete', {id: playlist.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette playlist ?');" style="display:inline-block;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ playlist.id) }}">
+                            <button class="btn btn-danger">Supprimer</button>
+                        </form>
+                    {% else %}
+                        <span class="text-muted">Non supprimable</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'basefront.html.twig' %}
+
+{% block body %}
+    <h1>{{ action }}</h1>
+
+    {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_label(form.title) }}
+            {{ form_widget(form.title, { 'attr': { 'class': 'form-control' } }) }}
+            {{ form_errors(form.title) }}
+        </div>
+        <div class="mb-3">
+            {{ form_label(form.description) }}
+            {{ form_widget(form.description, { 'attr': { 'class': 'form-control' } }) }}
+            {{ form_errors(form.description) }}
+        </div>
+        
+        <div class="mb-3">
+            {{ form_label(form.playlist) }}
+            {{ form_widget(form.playlist, { 'attr': { 'class': 'form-control' } }) }}
+            {{ form_errors(form.playlist) }}
+        </div>
+        <div class="mb-3">
+            {{ form_label(form.categories) }}
+            {{ form_widget(form.categories, { 'attr': { 'class': 'form-control' } }) }}
+            {{ form_errors(form.categories) }}
+        </div>
+        <div class="mb-3">
+            {{ form_label(form.publishedAt) }}
+            {{ form_widget(form.publishedAt, { 'attr': { 'class': 'form-control'} }) }}
+            {{ form_errors(form.publishedAt) }}
+        </div>
+        <div class="mb-3">
+            {{ form_label(form.videoId) }}
+            {{ form_widget(form.videoId, { 'attr': { 'class': 'form-control' } }) }}
+        </div>
+        {{ form_widget(form.submit, { 'attr': { 'class': 'btn btn-success' } }) }}
+    {{ form_end(form) }}
+    <a href="{{ path('admin.formations') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const publishedAtInput = document.querySelector('[name="formation[publishedAt]"]');
+
+        if (publishedAtInput) {
+            publishedAtInput.addEventListener('change', function () {
+                const selectedDate = new Date(publishedAtInput.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Réinitialiser l'heure pour ne comparer que la date
+                if (selectedDate < today) {
+                    alert("La date ne peut pas être antérieure à aujourd'hui.");
+                    publishedAtInput.value = ''; // Réinitialise la saisie si date invalide
+                }
+            });
+        }
+    });
+</script>
+
+
+{% endblock %}

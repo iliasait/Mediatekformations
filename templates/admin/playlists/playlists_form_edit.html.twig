@@ -1,0 +1,31 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Modifier la Playlist{% endblock %}
+
+{% block body %}
+<h1>Modifier la Playlist : {{ playlist.name }}</h1>
+
+{{ form_start(form) }}
+    <div class="mb-3">
+        {{ form_label(form.name, 'Nom') }}
+        {{ form_widget(form.name, {attr: {class: 'form-control'}}) }}
+        {{ form_errors(form.name) }}
+    </div>
+    <div class="mb-3">
+        {{ form_label(form.description, 'Description') }}
+        {{ form_widget(form.description, {attr: {class: 'form-control'}}) }}
+        {{ form_errors(form.description) }}
+    </div>
+    <h3>Formations associées</h3>
+    <ul>
+        {% for formation in playlist.formations %}
+            <li>{{ formation.title }}</li>
+        {% else %}
+            <li>Aucune formation associée.</li>
+        {% endfor %}
+    </ul>
+    {{ form_widget(form.submit, {attr: {class: 'btn btn-success'}}) }}
+{{ form_end(form) }}
+
+<a href="{{ path('admin.playlists') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+{% endblock %}
