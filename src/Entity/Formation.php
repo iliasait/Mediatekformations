@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Entity;
 
 use App\Repository\FormationRepository;
@@ -36,7 +38,7 @@ class Formation
     #[ORM\ManyToMany(targetEntity: Categorie::class, inversedBy: 'formations')]
     private Collection $categories;
 
-    #[ORM\OneToMany(mappedBy: "formation", targetEntity: Certif::class, cascade: ["persist", "remove"])]
+    #[ORM\ManyToMany(targetEntity: Certif::class, mappedBy: "formations")]
     private Collection $certifications;
 
     public function __construct()
@@ -54,18 +56,16 @@ class Formation
     {
         if (!$this->certifications->contains($certif)) {
             $this->certifications->add($certif);
-            $certif->setFormation($this);
+            $certif->addFormation($this);
         }
 
         return $this;
     }
-
+ 
     public function removeCertification(Certif $certif): static
     {
         if ($this->certifications->removeElement($certif)) {
-            if ($certif->getFormation() === $this) {
-                $certif->setFormation(null);
-            }
+            $certif->removeFormation($this);
         }
 
         return $this;
