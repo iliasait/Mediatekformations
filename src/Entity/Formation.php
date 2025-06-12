@@ -1,5 +1,3 @@
-<?php
-
 namespace App\Entity;
 
 use App\Repository\FormationRepository;
@@ -12,12 +10,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: FormationRepository::class)]
 class Formation
 {
-
-    /**
-     * Début de chemin vers les images
-     */
     private const CHEMIN_IMAGE = "https://i.ytimg.com/vi/";
-        
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -39,120 +33,42 @@ class Formation
     #[ORM\ManyToOne(inversedBy: 'formations')]
     private ?Playlist $playlist = null;
 
-    /**
-     * @var Collection<int, Categorie>
-     */
     #[ORM\ManyToMany(targetEntity: Categorie::class, inversedBy: 'formations')]
     private Collection $categories;
+
+    #[ORM\OneToMany(mappedBy: "formation", targetEntity: Certif::class, cascade: ["persist", "remove"])]
+    private Collection $certifications;
 
     public function __construct()
     {
         $this->categories = new ArrayCollection();
+        $this->certifications = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getCertifications(): Collection
     {
-        return $this->id;
+        return $this->certifications;
     }
 
-    public function getPublishedAt(): ?\DateTimeInterface
+    public function addCertification(Certif $certif): static
     {
-        return $this->publishedAt;
-    }
-
-    public function setPublishedAt(?\DateTimeInterface $publishedAt): static
-    {
-        $this->publishedAt = $publishedAt;
-
-        return $this;
-    }
-
-    public function getPublishedAtString(): string {
-        if($this->publishedAt == null){
-            return "";
-        }
-        return $this->publishedAt->format('d/m/Y');
-    }
-    
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    public function setTitle(?string $title): static
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function getVideoId(): ?string
-    {
-        return $this->videoId;
-    }
-
-    public function setVideoId(?string $videoId): static
-    {
-        $this->videoId = $videoId;
-
-        return $this;
-    }
-
-    public function getMiniature(): ?string
-    {
-        return self::CHEMIN_IMAGE . $this->videoId . "/default.jpg";
-    }
-
-    public function getPicture(): ?string
-    {
-        return self::CHEMIN_IMAGE . $this->videoId . "/hqdefault.jpg";
-    }
-    
-    public function getPlaylist(): ?Playlist
-    {
-        return $this->playlist;
-    }
-
-    public function setPlaylist(?Playlist $playlist): static
-    {
-        $this->playlist = $playlist;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Categorie>
-     */
-    public function getCategories(): Collection
-    {
-        return $this->categories;
-    }
-
-    public function addCategory(Categorie $category): static
-    {
-        if (!$this->categories->contains($category)) {
-            $this->categories->add($category);
+        if (!$this->certifications->contains($certif)) {
+            $this->certifications->add($certif);
+            $certif->setFormation($this);
         }
 
         return $this;
     }
 
-    public function removeCategory(Categorie $category): static
+    public function removeCertification(Certif $certif): static
     {
-        $this->categories->removeElement($category);
+        if ($this->certifications->removeElement($certif)) {
+            if ($certif->getFormation() === $this) {
+                $certif->setFormation(null);
+            }
+        }
 
         return $this;
     }
 }
+
